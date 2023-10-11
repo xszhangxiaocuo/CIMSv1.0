@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-cmn-Hans">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>index</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        table {
+            margin: 0 auto; /* 设置左右边距为自动，实现居中对齐 */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px; /* 添加一些底部间距 */
+        }
+    </style>
+</head>
+<body>
+<form method="post" action="/CIMS/IndexServlet" accept-charset="UTF-8">
+    <label for="searchField">选择查询字段：</label>
+    <select id="searchField" name="field">
+        <option value="id">编号</option>
+        <option value="name">名称</option>
+        <option value="price">单价</option>
+        <option value="number">库存</option>
+        <option value="remark">备注</option>
+    </select>
+    <label for="searchValue">关键字：</label>
+    <input type="text" id="searchValue" name="key">
+    <input type="submit" value="查询">
+</form>
+<!-- 添加按钮 -->
+<a href="/CIMS/AddServlet">添加</a>
+<table border="1">
+    <tr>
+        <th>编号</th>
+        <th>名称</th>
+        <th>单价</th>
+        <th>库存</th>
+        <th>备注</th>
+        <th>操作</th>
+    </tr>
+    <tr th:each="list:${session.fruits}">
+        <td th:text="${list.id}">-1</td>
+        <td th:text="${list.name}">null</td>
+        <td th:text="${list.price}">-1</td>
+        <td th:text="${list.number}">-1</td>
+        <td th:text="${list.remark}">null</td>
+        <!-- 使用表单来提交当前行的参数 -->
+        <td>
+            <form method="post" action="/CIMS/RemoveServlet" accept-charset="UTF-8">
+                <!-- 隐藏输入字段来传递参数 -->
+                <input type="hidden" name="id" th:value="${list.id}">
+                <input type="hidden" name="name" th:value="${list.name}">
+                <input type="hidden" name="price" th:value="${list.price}">
+                <input type="hidden" name="number" th:value="${list.number}">
+                <input type="hidden" name="remark" th:value="${list.remark}">
+                <input type="submit" value="删除">
+            </form>
+        </td>
+        <td>
+            <form method="post" action="/CIMS/ModifyServlet" accept-charset="UTF-8">
+                <!-- 隐藏输入字段来传递参数 -->
+                <input type="hidden" name="id" th:value="${list.id}">
+                <input type="hidden" name="name" th:value="${list.name}">
+                <input type="hidden" name="price" th:value="${list.price}">
+                <input type="hidden" name="number" th:value="${list.number}">
+                <input type="hidden" name="remark" th:value="${list.remark}">
+                <input type="submit" value="修改">
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

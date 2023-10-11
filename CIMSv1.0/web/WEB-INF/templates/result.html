@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-cmn-Hans">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>index</title>
+    <style>
+        table {
+            margin: 0 auto; /* 设置左右边距为自动，实现居中对齐 */
+        }
+    </style>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <th>编号</th>
+        <th>名称</th>
+        <th>单价</th>
+        <th>库存</th>
+        <th>备注</th>
+        <th>操作</th>
+    </tr>
+    <tr th:each="list:${session.result}">
+        <td th:text="${list.id}">-1</td>
+        <td th:text="${list.name}">null</td>
+        <td th:text="${list.price}">-1</td>
+        <td th:text="${list.number}">-1</td>
+        <td th:text="${list.remark}">null</td>
+        <td >删除</td>
+    </tr>
+</table>
+<br>
+<a href="/CIMS/IndexServlet">返回</a>
+</body>
+</html>

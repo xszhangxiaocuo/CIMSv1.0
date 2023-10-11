@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-cmn-Hans">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Modify Page</title>
+</head>
+<body>
+<form method="post" action="/CIMS/ModifyServlet" accept-charset="UTF-8">
+    <label for="id">id：</label>
+    <!-- 使用th:value设置值，并设置为readonly -->
+    <input type="text" id="id" name="id" th:value="${modifyId}" readonly>
+    <br>
+    <label for="name">名称：</label>
+    <input type="text" id="name" name="name" th:value="${modifyName}" required>
+    <br>
+    <label for="price">单价：</label>
+    <input type="text" id="price" name="price" th:value="${modifyPrice}">
+    <br>
+    <label for="number">库存：</label>
+    <input type="text" id="number" name="number" th:value="${modifyNumber}">
+    <br>
+    <label for="remark">备注：</label>
+    <textarea id="remark" name="remark" th:value="${modifyRemark}"></textarea>
+    <br>
+    <input type="submit" value="修改">
+</form>
+</body>
+</html>
