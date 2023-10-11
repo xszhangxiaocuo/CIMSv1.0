@@ -17,6 +17,8 @@ import java.util.List;
 public class IndexServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //（tomcat9中get没有参数的中文乱码问题，但是post有）解决中文乱码，在每次处理请求前先执行request.setCharacterEncoding("UTF-8");
+        //request.setCharacterEncoding("UTF-8");必须放在所有代码的前面
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
         List<Fruit> fruits = FruitDB.getFruits();
