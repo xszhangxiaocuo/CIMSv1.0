@@ -54,15 +54,7 @@
         <td th:text="${list.remark}">null</td>
         <!-- 使用表单来提交当前行的参数 -->
         <td>
-            <form method="post" action="/CIMS/RemoveServlet" accept-charset="UTF-8">
-                <!-- 隐藏输入字段来传递参数 -->
-                <input type="hidden" name="id" th:value="${list.id}">
-                <input type="hidden" name="name" th:value="${list.name}">
-                <input type="hidden" name="price" th:value="${list.price}">
-                <input type="hidden" name="number" th:value="${list.number}">
-                <input type="hidden" name="remark" th:value="${list.remark}">
-                <input type="submit" value="删除">
-            </form>
+            <button th:attr="onclick='delFruit(' + ${list.id} + ')'">删除</button>
         </td>
         <td>
             <form method="post" action="/CIMS/ModifyServlet" accept-charset="UTF-8">
@@ -77,5 +69,12 @@
         </td>
     </tr>
 </table>
+<script>
+function delFruit(id){
+    if(confirm('是否确认删除？')) {
+        window.location.href = '/CIMS/RemoveServlet?id=' + id;
+    }
+}
+</script>
 </body>
 </html>
