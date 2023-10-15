@@ -28,7 +28,6 @@ public class ModifyServlet extends HttpServlet {
         request.setAttribute("modifyPrice", price);
         request.setAttribute("modifyNumber", number);
         request.setAttribute("modifyRemark", remark);
-        System.out.println("name:"+name);
         //创建模版引擎
         WebApplication webApplication = new WebApplication(this.getServletContext());
         TemplateEngine templateEngine = webApplication.getTemplateEngine();
