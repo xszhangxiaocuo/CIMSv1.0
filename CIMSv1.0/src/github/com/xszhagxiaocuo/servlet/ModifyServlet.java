@@ -19,15 +19,12 @@ public class ModifyServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
         String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String price = request.getParameter("price");
-        String number = request.getParameter("number");
-        String remark = request.getParameter("remark");
+        Fruit fruit = FruitDB.SearchById(Integer.parseInt(id)).get(0);
         request.setAttribute("modifyId", id);
-        request.setAttribute("modifyName", name);
-        request.setAttribute("modifyPrice", price);
-        request.setAttribute("modifyNumber", number);
-        request.setAttribute("modifyRemark", remark);
+        request.setAttribute("modifyName", fruit.getName());
+        request.setAttribute("modifyPrice", fruit.getPrice());
+        request.setAttribute("modifyNumber", fruit.getNumber());
+        request.setAttribute("modifyRemark", fruit.getRemark());
         //创建模版引擎
         WebApplication webApplication = new WebApplication(this.getServletContext());
         TemplateEngine templateEngine = webApplication.getTemplateEngine();
