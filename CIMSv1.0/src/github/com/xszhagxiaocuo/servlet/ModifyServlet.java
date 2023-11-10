@@ -14,13 +14,15 @@ import java.util.List;
 
 @WebServlet(name = "ModifyServlet", value = "/ModifyServlet")
 public class ModifyServlet extends HttpServlet {
+    int realId;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
-        String id = request.getParameter("id");
+        String id = request.getParameter("realId");
+        realId = Integer.parseInt(id);
         Fruit fruit = FruitDB.SearchById(Integer.parseInt(id)).get(0);
-        request.setAttribute("modifyId", id);
+        request.setAttribute("modifyId", fruit.getId());
         request.setAttribute("modifyName", fruit.getName());
         request.setAttribute("modifyPrice", fruit.getPrice());
         request.setAttribute("modifyNumber", fruit.getNumber());
@@ -43,13 +45,12 @@ public class ModifyServlet extends HttpServlet {
             return;
         }
 
-        String id = request.getParameter("id");
         String name = request.getParameter("name");
         String price = request.getParameter("price");
         String number = request.getParameter("number");
         String remark = request.getParameter("remark");
-        System.out.println("modifyname:"+name);
-        List<Fruit> list = FruitDB.SearchById(Integer.parseInt(id));
+
+        List<Fruit> list = FruitDB.SearchById(realId);
         if (list == null) {
             response.sendRedirect("/CIMS/IndexServlet");
             return;
@@ -59,8 +60,8 @@ public class ModifyServlet extends HttpServlet {
             if (name.equals("") == false) {
                 fruit.setName(name);
             }
-            if (price.equals("") == false && Integer.parseInt(price) >= 0) {
-                fruit.setPrice(Integer.parseInt(price));
+            if (price.equals("") == false && Float.parseFloat(price) >= 0) {
+                fruit.setPrice(Float.parseFloat(price));
             }
             if (number.equals("") == false && Integer.parseInt(number) >= 0) {
                 fruit.setNumber(Integer.parseInt(number));

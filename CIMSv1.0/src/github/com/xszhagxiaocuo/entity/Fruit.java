@@ -1,47 +1,38 @@
 package github.com.xszhagxiaocuo.entity;
 
+import github.com.xszhagxiaocuo.dao.FruitDB;
+
 public class Fruit {
     private static  final long serialVersionUID = 1L;
-    private int id;
+    private int id;//在表中从上到下的顺序
+    private int realId;//在表中的真实id
     private String name;
-    private int price;
+    private float price;
     private int number;
     private String remark;
-    public Fruit(){
-    }
-    public Fruit(int id,String name){
-        this.id = id;
-        this.name = name;
-    }
 
-    public Fruit(int id,String name,int price){
-        this.id = id;
-        this.name = name;
-        this.price = price;
-    }
+    public Fruit(){}
 
-    public Fruit(int id,String name,int price,int number){
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.number = number;
-    }
-
-    public Fruit(int id,String name,int price,int number,String remark){
-        this.id = id;
+    public Fruit(String name,float price,int number,String remark){
         this.name = name;
         this.price = price;
         this.number = number;
         this.remark = remark;
     }
 
+    public void setRealId(int realId) {
+        this.realId = realId;
+    }
+
+    public int getRealId() {
+        return realId;
+    }
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id){this.id=id;}
 
     public String getName(){
         return name;
@@ -59,11 +50,11 @@ public class Fruit {
         this.number = number;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
-    public int getPrice(){
+    public float getPrice(){
         return price;
     }
 

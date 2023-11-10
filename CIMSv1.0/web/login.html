@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html"; charset="UTF-8">
+    <title>login</title>
+</head>
+<body>
+<form action="/CIMS/LoginServlet" method="post">
+    用户名： <input type="text" name="username" /><br>
+    密&nbsp;&nbsp;码：<input type="password" name="password"><br>
+    自动登录时间：
+    <input type="radio" name="autoLoginDuration" value="30"> 30分钟
+    <input type="radio" name="autoLoginDuration" value="1440"> 1天
+    <input type="radio" name="autoLoginDuration" value="43200"> 1个月<br>
+    <input type="submit" value="登录">
+</form>
+<button onclick="location.href='/CIMS/RegisterServlet'">注册</button>
+</body>
+</html>

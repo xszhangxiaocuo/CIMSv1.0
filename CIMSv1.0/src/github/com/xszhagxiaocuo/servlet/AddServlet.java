@@ -32,15 +32,14 @@ public class AddServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
 
-        String id = request.getParameter("id");
         String name = request.getParameter("name");
         String price = request.getParameter("price");
         String number = request.getParameter("number");
         String remark = request.getParameter("remark");
 
         try {
-            if (id.equals("") == false && name.equals("") == false && price.equals("") == false && number.equals("") == false) {
-                Fruit fruit = new Fruit(Integer.parseInt(id), name, Integer.parseInt(price), Integer.parseInt(number), remark);
+            if (name.equals("") == false && price.equals("") == false && number.equals("") == false) {
+                Fruit fruit = new Fruit(name, Float.parseFloat(price), Integer.parseInt(number), remark);
                 if(FruitDB.Add(fruit)){
                     System.out.println("添加成功！");
                 }else {

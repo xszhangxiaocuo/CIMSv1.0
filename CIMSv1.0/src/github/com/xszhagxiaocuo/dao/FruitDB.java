@@ -1,148 +1,253 @@
 package github.com.xszhagxiaocuo.dao;
 
 import github.com.xszhagxiaocuo.entity.Fruit;
+import util.DruidUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class FruitDB {
-    private static List<Fruit> fruits = new ArrayList<>();//模拟数据库中的一张表
-    //获取表中的所有记录
+    private static Map<Integer,Integer> idMap = new HashMap<>();//映射关系id->realId
+    private static Map<Integer,Integer> realIdMap = new HashMap<>();//映射关系realId->id
     public static List<Fruit> getFruits() {
-        return fruits;
-    }
-    //数据初始化
-    static {
-        Fruit fruit1 = new Fruit(1,"苹果",2,1,"1");
-        fruits.add(fruit1);
-        Fruit fruit2 = new Fruit(2,"banana",1,3,"2");
-        fruits.add(fruit2);
-        Fruit fruit3 = new Fruit(3,"orange",3,2,"3");
-        fruits.add(fruit3);
-        Fruit fruit4 = new Fruit(4,"grapes",1,2,"4");
-        fruits.add(fruit4);
-        Fruit fruit5 = new Fruit(5,"watermelon",2,1,"5");
-        fruits.add(fruit5);
-    }
+        List<Fruit> fruits = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-    public static int FindIndex(Integer id) {
-        int index = -1;
-        for (int i = 0; i < fruits.size(); i++) {
-            if (fruits.get(i).getId() == id) {
-                index = i;
-                break;
+        try {
+            //从连接池获取一个连接
+            conn = DruidUtils.getConnection();
+            String sql = "SELECT * FROM t_goods";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery(sql);
+
+            int id=0;
+            while (rs.next()) {
+                id++;
+                Fruit fruit = new Fruit();
+                fruit.setId(id);
+                fruit.setRealId(rs.getInt("id"));
+                fruit.setName(rs.getString("name"));
+                fruit.setPrice(rs.getFloat("price"));
+                fruit.setNumber(rs.getInt("number"));
+                fruit.setRemark(rs.getString("remark"));
+
+                fruits.add(fruit);
+                idMap.put(fruit.getId(),fruit.getRealId());//将代表顺序的id与真实的realId对应起来
+                realIdMap.put(fruit.getRealId(),fruit.getId());//将真实的realId与代表顺序的id对应起来
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtils.close(rs, stmt, conn);
         }
-        if (index == -1) {
-            return -1;
-        }
-        return index;
+
+        return fruits;
     }
 
     public static boolean Add(Fruit fruit){
-        //先查询是否存在同id的数据
-        List<Fruit> f = SearchById(fruit.getId());
-        if (f!=null){
-            return false;
-        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
         try {
-            fruits.add(fruit);
-        }catch (Exception e){
+            conn = DruidUtils.getConnection();
+            String sql = "INSERT INTO t_goods (name, price,number,remark) VALUES (?, ?,?,?)";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, fruit.getName());
+            pstmt.setFloat(2, fruit.getPrice());
+            pstmt.setInt(3, fruit.getNumber());
+            pstmt.setString(4, fruit.getRemark());
+
+            pstmt.executeUpdate();
+        }  catch (Exception e) {
+            e.printStackTrace();
             return false;
+        } finally {
+            DruidUtils.close(pstmt, conn);
         }
         return true;
     }
 
     public static boolean Remove(Integer id){
-        int index = FindIndex(id);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        id=idMap.get(id);
+
         try {
-            fruits.remove(fruits.get(index));
-        }catch (Exception e){
+            conn = DruidUtils.getConnection();
+            String sql = "DELETE FROM t_goods WHERE id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
+        } finally {
+            DruidUtils.close(pstmt, conn);
         }
         return true;
     }
 
     public static boolean Modify(Fruit fruit){
-        int index=index=FindIndex(fruit.getId());
-        if (index==-1){
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = DruidUtils.getConnection();
+            String sql = "UPDATE t_goods SET name = ?, price = ?, number = ?, remark = ? WHERE id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, fruit.getName());
+            pstmt.setFloat(2, fruit.getPrice());
+            pstmt.setInt(3, fruit.getNumber());
+            pstmt.setString(4, fruit.getRemark());
+            pstmt.setInt(5,fruit.getRealId());
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
+        } finally {
+            DruidUtils.close(pstmt, conn);
         }
-        fruits.set(index,fruit);
         return true;
     }
 
     public static List<Fruit> SearchById(int id){
-        List<Fruit> result = new ArrayList<>();
-        int index = FindIndex(id);
-        if (index!=-1){
-            result.add(fruits.get(index));
-            return result;
+        List<Fruit> fruits = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            //从连接池获取一个连接
+            conn = DruidUtils.getConnection();
+            String sql = "SELECT * FROM t_goods WHERE id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1,id);
+            rs = stmt.executeQuery();
+
+            fruits=fetchRs(rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtils.close(rs, stmt, conn);
         }
-        return null;
+
+        return fruits;
     }
 
     public static List<Fruit> SearchByName(String name){
-        List<Fruit> result = new ArrayList<>();
-        for (Fruit fruit : fruits) {
-            if (fruit.getName().contains(name)){
-                result.add(fruit);
-            }
+        List<Fruit> fruits = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            //从连接池获取一个连接
+            conn = DruidUtils.getConnection();
+            String sql = "SELECT * FROM t_goods WHERE name LIKE ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1,"%"+name+"%"); //模糊查询
+            rs = stmt.executeQuery();
+
+            fruits=fetchRs(rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtils.close(rs, stmt, conn);
         }
-        if (result.size()==0){
-            return null;
-        }
-        return result;
+
+        return fruits;
     }
 
-    public static List<Fruit> SearchByPrice(int price){
-        List<Fruit> result = new ArrayList<>();
-        for (Fruit fruit : fruits) {
-            if (fruit.getPrice()==price){
-                result.add(fruit);
-            }
+    public static List<Fruit> SearchByPrice(float price){
+        List<Fruit> fruits = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            //从连接池获取一个连接
+            conn = DruidUtils.getConnection();
+            String sql = "SELECT * FROM t_goods WHERE price = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setFloat(1,price);
+            rs = stmt.executeQuery();
+
+            fruits=fetchRs(rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtils.close(rs, stmt, conn);
         }
-        if (result.size()==0){
-            return null;
-        }
-        return result;
+
+        return fruits;
     }
 
     public static List<Fruit> SearchByNumber(int number){
-        List<Fruit> result = new ArrayList<>();
-        for (Fruit fruit : fruits) {
-            if (fruit.getNumber()==number){
-                result.add(fruit);
-            }
+        List<Fruit> fruits = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            //从连接池获取一个连接
+            conn = DruidUtils.getConnection();
+            String sql = "SELECT * FROM t_goods WHERE number = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1,number);
+            rs = stmt.executeQuery();
+
+            fruits=fetchRs(rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtils.close(rs, stmt, conn);
         }
-        if (result.size()==0){
-            return null;
-        }
-        return result;
+
+        return fruits;
     }
 
     public static List<Fruit> SearchByRemark(String remark){
-        List<Fruit> result = new ArrayList<>();
-        for (Fruit fruit : fruits) {
-            if (fruit.getRemark().contains(remark)){
-                result.add(fruit);
-            }
+        List<Fruit> fruits = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            //从连接池获取一个连接
+            conn = DruidUtils.getConnection();
+            String sql = "SELECT * FROM t_goods WHERE remark LIKE ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1,"%"+remark+"%");
+            rs = stmt.executeQuery();
+
+            fruits=fetchRs(rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtils.close(rs, stmt, conn);
         }
-        if (result.size()==0){
-            return null;
-        }
-        return result;
+
+        return fruits;
     }
 
     public static List<Fruit> Search(String field,String key){
         try {
             switch (field) {
                 case "id":
-                    return SearchById(Integer.parseInt(key));
+                    System.out.println("当前查询id："+idMap.get(Integer.parseInt(key)));
+                    return SearchById(idMap.get(Integer.parseInt(key)));
                 case "name":
                     return SearchByName(key);
                 case "price":
-                    return SearchByPrice(Integer.parseInt(key));
+                    return SearchByPrice(Float.parseFloat(key));
                 case "number":
                     return SearchByNumber(Integer.parseInt(key));
                 case "remark":
@@ -152,6 +257,23 @@ public class FruitDB {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    private static List<Fruit> fetchRs(ResultSet rs) throws SQLException {
+        List<Fruit> fruits = new ArrayList<>();
+        while (rs.next()) {
+            Fruit fruit = new Fruit();
+            int id = rs.getInt("id");
+            fruit.setId(realIdMap.get(id));
+            fruit.setRealId(id);
+            fruit.setName(rs.getString("name"));
+            fruit.setPrice(rs.getFloat("price"));
+            fruit.setNumber(rs.getInt("number"));
+            fruit.setRemark(rs.getString("remark"));
+
+            fruits.add(fruit);
+        }
+        return fruits;
     }
 
 }

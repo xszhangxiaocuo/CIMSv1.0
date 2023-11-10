@@ -2,6 +2,7 @@ package github.com.xszhagxiaocuo.servlet;
 
 import github.com.xszhagxiaocuo.dao.FruitDB;
 import github.com.xszhagxiaocuo.entity.Fruit;
+import github.com.xszhagxiaocuo.entity.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import util.WebApplication;
@@ -25,6 +26,8 @@ public class IndexServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         session.setAttribute("fruits",fruits);
+        User user = (User) session.getAttribute("user");
+        session.setAttribute("username",user.getName());
         //创建模版引擎
         WebApplication webApplication = new WebApplication(this.getServletContext());
         TemplateEngine templateEngine = webApplication.getTemplateEngine();

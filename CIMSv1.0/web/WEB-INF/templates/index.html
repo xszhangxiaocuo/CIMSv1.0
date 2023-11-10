@@ -22,6 +22,11 @@
     </style>
 </head>
 <body>
+<!-- 用户信息和注销按钮 -->
+<div class="user-info">
+    <span>欢迎登录, <span th:text="${session.username}">用户名</span></span>
+    <a href="/CIMS/LogoutServlet">注销</a><br>
+</div>
 <form method="post" action="/CIMS/IndexServlet" accept-charset="UTF-8">
     <label for="searchField">选择查询字段：</label>
     <select id="searchField" name="field">
@@ -59,11 +64,7 @@
         <td>
             <form method="post" action="/CIMS/ModifyServlet" accept-charset="UTF-8">
                 <!-- 隐藏输入字段来传递参数 -->
-                <input type="hidden" name="id" th:value="${list.id}">
-                <input type="hidden" name="name" th:value="${list.name}">
-                <input type="hidden" name="price" th:value="${list.price}">
-                <input type="hidden" name="number" th:value="${list.number}">
-                <input type="hidden" name="remark" th:value="${list.remark}">
+                <input type="hidden" name="realId" th:value="${list.realId}">
                 <input type="submit" value="修改">
             </form>
         </td>
