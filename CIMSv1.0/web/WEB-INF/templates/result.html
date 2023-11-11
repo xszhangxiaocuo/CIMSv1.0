@@ -4,8 +4,20 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title>index</title>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
         table {
             margin: 0 auto; /* 设置左右边距为自动，实现居中对齐 */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px; /* 添加一些底部间距 */
         }
     </style>
 </head>
@@ -25,10 +37,40 @@
         <td th:text="${list.price}">-1</td>
         <td th:text="${list.number}">-1</td>
         <td th:text="${list.remark}">null</td>
-        <td >删除</td>
+        <!-- 使用表单来提交当前行的参数 -->
+        <td>
+            <button th:attr="onclick='delFruit(' + ${list.id} + ')'">删除</button>
+        </td>
+        <td>
+            <form method="post" action="/CIMS/ModifyServlet" accept-charset="UTF-8">
+                <!-- 隐藏输入字段来传递参数 -->
+                <input type="hidden" name="realId" th:value="${list.realId}">
+                <input type="submit" value="修改">
+            </form>
+        </td>
     </tr>
 </table>
-<br>
-<a href="/CIMS/IndexServlet">返回</a>
+<div class="pagination">
+    <a href="/CIMS/ResultServlet?page=1">首页</a>
+    <a th:href="@{/ResultServlet(page=${session.resultPageInfo.prevPage})}" th:if="${session.resultPageInfo.prevPage}">上一页</a>
+    <a th:href="@{/ResultServlet(page=${session.resultPageInfo.nextPage})}" th:if="${session.resultPageInfo.nextPage}">下一页</a>
+    <a th:href="@{/ResultServlet(page=${session.resultPageInfo.totalPages})}" th:if="${session.resultPageInfo.currentPage != session.resultPageInfo.totalPages}">尾页</a>
+    <!-- 页数输入框 -->
+    <form action="/CIMS/ResultServlet" method="get" style="display: flex; flex-direction: row;align-items: center; justify-content: center;">
+        <input type="number" name="page" min="1" th:value="${session.resultPageInfo.currentPage}" required style="width: 3em; text-align: center;">
+        <span style="margin-left: 5px; margin-right: 5px;" th:text="'/' + ${session.resultPageInfo.totalPages}"></span>
+        <input type="submit" value="跳转" style="margin-left: 5px;">
+    </form>
+
+    <span th:text="'共' + ${session.resultPageInfo.totalRecords} + '条'"></span>
+</div>
+<a href="/CIMS/IndexServlet" class="return-button">返回</a>
+<script>
+    function delFruit(id){
+        if(confirm('是否确认删除？')) {
+            window.location.href = '/CIMS/RemoveServlet?id=' + id;
+        }
+    }
+</script>
 </body>
 </html>

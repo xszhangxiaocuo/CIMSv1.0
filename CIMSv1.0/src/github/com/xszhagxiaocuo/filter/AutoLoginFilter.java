@@ -24,7 +24,7 @@ public class AutoLoginFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        if (req.getRequestURI().contains("/LogoutServlet")){
+        if (req.getRequestURI().contains("/LogoutServlet")||req.getRequestURI().contains("/RegisterServlet")){//登录和注册页面不需要登录
             chain.doFilter(req,res);
             return;
         }

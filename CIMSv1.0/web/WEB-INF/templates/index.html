@@ -70,6 +70,21 @@
         </td>
     </tr>
 </table>
+<div class="pagination">
+    <a href="/CIMS/IndexServlet?page=1">首页</a>
+    <a th:href="@{/IndexServlet(page=${session.pageInfo.prevPage})}" th:if="${session.pageInfo.prevPage}">上一页</a>
+    <a th:href="@{/IndexServlet(page=${session.pageInfo.nextPage})}" th:if="${session.pageInfo.nextPage}">下一页</a>
+    <a th:href="@{/IndexServlet(page=${session.pageInfo.totalPages})}" th:if="${session.pageInfo.currentPage != session.pageInfo.totalPages}">尾页</a>
+    <!-- 页数输入框 -->
+    <form action="/CIMS/IndexServlet" method="get" style="display: flex; flex-direction: row;align-items: center; justify-content: center;">
+        <input type="number" name="page" min="1" th:value="${session.pageInfo.currentPage}" required style="width: 3em; text-align: center;">
+        <span style="margin-left: 5px; margin-right: 5px;" th:text="'/' + ${session.pageInfo.totalPages}"></span>
+        <input type="submit" value="跳转" style="margin-left: 5px;">
+    </form>
+
+    <span th:text="'共' + ${session.pageInfo.totalRecords} + '条'"></span>
+</div>
+
 <script>
 function delFruit(id){
     if(confirm('是否确认删除？')) {
